@@ -19,7 +19,7 @@ jobs:
         with:
           deployment-id: ${{ github.event.deployment.id }}
           description: Start to deploy to the Kubernetes
-          log-url: https://gitploy.jp.ngrok.io/applications/argocd-demo-${{ github.event.deployment.environment }}
+          log-url: https://gitploy.jp.ngrok.io/applications/${{ github.event.deployment.payload.application }}
           state: "in_progress"
           token: "${{ github.token }}"
       - 
@@ -38,7 +38,7 @@ jobs:
         uses: clowdhaus/argo-cd-action/@main
         with:
           version: 2.3.3
-          command: app set argocd-demo-${{ github.event.deployment.environment }}
+          command: app set ${{ github.event.deployment.payload.application }}
           options: >
             --revision ${{ github.sha }}  
             --kustomize-image gitployio/argocd-demo=gitployio/argocd-demo:sha-${{ github.sha }}
@@ -47,7 +47,7 @@ jobs:
         uses: clowdhaus/argo-cd-action/@main
         with:
           version: 2.3.3
-          command: app sync argocd-demo-${{ github.event.deployment.environment }}
+          command: app sync ${{ github.event.deployment.payload.application }}
           options: --timeout 3600
       - 
         if: success()
@@ -55,7 +55,7 @@ jobs:
         with:
           deployment-id: ${{ github.event.deployment.id }}
           description: Finish to deploy successfully.
-          log-url: https://gitploy.jp.ngrok.io/applications/argocd-demo-${{ github.event.deployment.environment }}
+          log-url: https://gitploy.jp.ngrok.io/applications/${{ github.event.deployment.payload.application }}
           state: "success"
           token: "${{ github.token }}"
       - 
@@ -64,6 +64,6 @@ jobs:
         with:
           deployment-id: ${{ github.event.deployment.id }}
           description: Failed to deploy.
-          log-url: https://gitploy.jp.ngrok.io/applications/argocd-demo-${{ github.event.deployment.environment }}
+          log-url: https://gitploy.jp.ngrok.io/applications/${{ github.event.deployment.payload.application }}
           state: "failure"
           token: "${{ github.token }}"
