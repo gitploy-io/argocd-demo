@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: argocd-demo
-  namespace: argocd-demo
+  namespace: argocd
 spec:
   selector:
     matchLabels:
