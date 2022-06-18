@@ -86,3 +86,7 @@ We're going to build the deployment pipeline with GitHub actions. The pipeline u
 </details>
 
 *I used `ngrok` to connect with the local Argo CD server.*
+
+## Question
+
+If you have any questions, please leave them in the [community](https://github.com/gitploy-io/gitploy/discussions).
