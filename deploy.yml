@@ -1,0 +1,10 @@
+envs:
+  - name: dev
+    auto_merge: false
+    required_contexts:
+      - "publish-image"
+  - name: production
+    auto_merge: true
+    required_contexts:
+      - "publish-image"
+    production_environment: true
