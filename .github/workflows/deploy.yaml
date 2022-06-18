@@ -1,0 +1,50 @@
+name: deploy
+
+on:
+  deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Trigger the pipeline
+          state: "queued"
+          token: "${{ github.token }}"
+      - 
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Start to deploy to the Kubernetes
+          state: "in_progress"
+          token: "${{ github.token }}"
+      - 
+        name: Log in
+        uses: clowdhaus/argo-cd-action/@main
+        with:
+          version: 2.3.3
+          command: login https://gitploy.jp.ngrok.io
+          options: >
+            --username 
+            admin 
+            --password 
+            ${{ secrets.ARGOCD_PASSWORD }}
+      - 
+        name: Set image tag
+        uses: clowdhaus/argo-cd-action/@main
+        with:
+          version: 2.3.3
+          command: set argocd-demo-${{ github.event.deployment.environment }}
+          options: >
+            --revision ${{ github.sha }}  
+            --kustomize-image gitployio/argocd-demo=gitployio/argocd-demo:sha-${{ github.sha }}
+      - 
+        name: Sync
+        uses: clowdhaus/argo-cd-action/@main
+        with:
+          version: 2.3.3
+          command: sync argocd-demo-${{ github.event.deployment.environment }}
+          options: --timeout 3600
