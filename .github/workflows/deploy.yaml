@@ -8,17 +8,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - 
-        uses: chrnorm/deployment-status@releases/v1
+        uses: chrnorm/deployment-status@releases/v2
         with:
-          deployment_id: ${{ github.event.deployment.id }}
+          deployment-id: ${{ github.event.deployment.id }}
           description: Trigger the pipeline
           state: "queued"
           token: "${{ github.token }}"
       - 
-        uses: chrnorm/deployment-status@releases/v1
+        uses: chrnorm/deployment-status@releases/v2
         with:
-          deployment_id: ${{ github.event.deployment.id }}
+          deployment-id: ${{ github.event.deployment.id }}
           description: Start to deploy to the Kubernetes
+          log-url: https://gitploy.jp.ngrok.io/applications/argocd-demo-${{ github.event.deployment.environment }}
           state: "in_progress"
           token: "${{ github.token }}"
       - 
@@ -26,7 +27,7 @@ jobs:
         uses: clowdhaus/argo-cd-action/@main
         with:
           version: 2.3.3
-          command: login https://gitploy.jp.ngrok.io
+          command: login gitploy.jp.ngrok.io
           options: >
             --username 
             admin 
@@ -37,7 +38,7 @@ jobs:
         uses: clowdhaus/argo-cd-action/@main
         with:
           version: 2.3.3
-          command: set argocd-demo-${{ github.event.deployment.environment }}
+          command: app set argocd-demo-${{ github.event.deployment.environment }}
           options: >
             --revision ${{ github.sha }}  
             --kustomize-image gitployio/argocd-demo=gitployio/argocd-demo:sha-${{ github.sha }}
@@ -46,5 +47,23 @@ jobs:
         uses: clowdhaus/argo-cd-action/@main
         with:
           version: 2.3.3
-          command: sync argocd-demo-${{ github.event.deployment.environment }}
+          command: app sync argocd-demo-${{ github.event.deployment.environment }}
           options: --timeout 3600
+      - 
+        if: success()
+        uses: chrnorm/deployment-status@releases/v2
+        with:
+          deployment-id: ${{ github.event.deployment.id }}
+          description: Finish to deploy successfully.
+          log-url: https://gitploy.jp.ngrok.io/applications/argocd-demo-${{ github.event.deployment.environment }}
+          state: "success"
+          token: "${{ github.token }}"
+      - 
+        if: failure()
+        uses: chrnorm/deployment-status@releases/v2
+        with:
+          deployment-id: ${{ github.event.deployment.id }}
+          description: Failed to deploy.
+          log-url: https://gitploy.jp.ngrok.io/applications/argocd-demo-${{ github.event.deployment.environment }}
+          state: "failure"
+          token: "${{ github.token }}"
