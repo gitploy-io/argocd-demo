@@ -55,7 +55,9 @@ jobs:
         with:
           version: 2.3.3
           command: app wait ${{ github.event.deployment.payload.application }}
-          options: --timeout 600
+          options: >
+            --health
+            --timeout 600
       - 
         if: success()
         uses: chrnorm/deployment-status@releases/v2
