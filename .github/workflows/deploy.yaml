@@ -48,7 +48,14 @@ jobs:
         with:
           version: 2.3.3
           command: app sync ${{ github.event.deployment.payload.application }}
-          options: --timeout 3600
+          options: --timeout 300
+      - 
+        name: Wait
+        uses: clowdhaus/argo-cd-action/@main
+        with:
+          version: 2.3.3
+          command: app wait ${{ github.event.deployment.payload.application }}
+          options: --timeout 600
       - 
         if: success()
         uses: chrnorm/deployment-status@releases/v2
