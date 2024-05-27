@@ -3,7 +3,7 @@ envs:
     auto_merge: false
     required_contexts:
       - "publish-image"
-    dyanmic_payload:
+    dynamic_payload:
       enabled: true
       application:
         type: string
