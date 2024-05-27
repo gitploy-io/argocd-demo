@@ -3,8 +3,12 @@ envs:
     auto_merge: false
     required_contexts:
       - "publish-image"
-    payload:
-      application: argocd-demo-dev
+    dyanmic_payload:
+      enabled: true
+      application:
+        type: string
+        description: Application
+        default: argocd-demo-dev
   - name: prod
     auto_merge: true
     required_contexts:
@@ -12,3 +16,4 @@ envs:
     production_environment: true
     payload:
       application: argocd-demo-prod
+  
