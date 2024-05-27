@@ -5,10 +5,11 @@ envs:
       - "publish-image"
     dynamic_payload:
       enabled: true
-      application:
-        type: string
-        description: Application
-        default: argocd-demo-dev
+      inputs:
+        application:
+          type: string
+          description: Application
+          default: argocd-demo-dev
   - name: prod
     auto_merge: true
     required_contexts:
